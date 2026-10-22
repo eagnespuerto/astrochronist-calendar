@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Astrochronist Calendar</title>
+<meta name="description" content="Calendars and clocks counted from the sky: Gregorian, Martian, Lunar Standard Time, and barycentric days toward Sagittarius A* and Alpha Centauri.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='6' fill='%23E8A33D'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='6' fill='none' stroke='%2386A6FF' stroke-width='2' transform='rotate(-25 16 16)'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-sys="greg">
+<header class="site">
+  <a class="brand" href="#now"><span class="orb" aria-hidden="true"></span><span class="brand-name">Astrochronist</span></a>
+  <nav aria-label="Sections">
+    <a href="#now" data-tab="now">Now</a>
+    <a href="#calendar" data-tab="calendar">Calendar</a>
+    <a href="#science" data-tab="science">Science</a>
+    <a href="#about" data-tab="about">About</a>
+  </nav>
+</header>
+
+<main>
+  <!-- NOW: homepage clock -->
+  <section id="tab-now" class="tab now" aria-label="Now" hidden>
+    <div class="bg" id="bg" aria-hidden="true"></div>
+    <div class="scrim" aria-hidden="true"></div>
+    <div class="now-inner">
+      <div class="sysmenu" role="radiogroup" aria-label="Time system" id="nowSys"></div>
+      <div class="clock mono" id="nowTime">--:--:--</div>
+      <div class="clock-note" id="nowNote"></div>
+      <div class="dmy">
+        <div><span class="lbl" id="uDay">Day</span><span class="v" id="nDay">—</span><span class="s" id="nDaySub"></span></div>
+        <div><span class="lbl" id="uMonth">Month</span><span class="v" id="nMonth">—</span><span class="s" id="nMonthSub"></span></div>
+        <div><span class="lbl" id="uYear">Year</span><span class="v" id="nYear">—</span><span class="s" id="nYearSub"></span></div>
+      </div>
+      <dl class="extras" id="nowExtras"></dl>
+      <div class="here" id="here">
+        <div class="here-row" id="hereLocal"></div>
+        <div class="here-row" id="hereGeo"></div>
+        <button type="button" id="geoBtn">Use my location for solar time</button>
+      </div>
+    </div>
+    <div class="credit"><a id="credit" target="_blank" rel="noopener"></a><button type="button" id="shuffle" aria-label="Show another photo" title="Another photo">↻</button></div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section id="tab-calendar" class="tab page" aria-label="Calendar" hidden>
+    <div class="cal-top">
+      <div>
+        <h1 id="calTitle">—</h1>
+        <p id="calSub" class="sub"></p>
+      </div>
+      <div class="controls">
+        <div class="seg" role="radiogroup" aria-label="Calendar" id="calSys"></div>
+        <div class="row">
+          <button type="button" id="prev" class="round" aria-label="Previous year">‹</button>
+          <button type="button" id="next" class="round" aria-label="Next year">›</button>
+          <button type="button" id="today">Today</button>
+          <form id="goto" class="goto" autocomplete="off">
+            <label for="gotoIn" class="lbl">Go to</label>
+            <input type="text" id="gotoIn">
+            <button type="submit">Go</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="band" class="band" aria-hidden="true"></div>
+    <div class="bandnote"><span id="bandL"></span><span id="bandR" class="r"></span></div>
+    <section id="detail" class="detail" aria-live="polite"></section>
+    <div id="months" class="months"></div>
+    <p id="calFoot" class="foot"></p>
+  </section>
+
+  <!-- SCIENCE -->
+  <section id="tab-science" class="tab page" aria-label="Science" hidden>
+    <div class="sci-head">
+      <h1>Science</h1>
+      <p class="sub">Live time scales, barycentric corrections, the exact Martian months, and a transit and eclipse planner whose events can show on the calendar.</p>
+    </div>
+    <section class="strip" aria-label="Time scales now" id="strip"></section>
+
+    <section aria-labelledby="hBjd">
+      <div class="bar"><h2 id="hBjd">Living on BJD time</h2>
+        <span class="seg small" role="radiogroup" aria-label="Baseline" id="sciBase"></span></div>
+      <div class="cards" id="bjdCards"></div>
+      <p class="note">BJD days start near noon UTC, so a night of observing keeps one date. Everyone on Earth shares the same day number at the same moment.</p>
+    </section>
+
+    <section aria-labelledby="hMars">
+      <h2 id="hMars">Mars on the same clock</h2>
+      <div class="cards mars" id="marsCards"></div>
+    </section>
+
+    <section aria-labelledby="hLunar">
+      <h2 id="hLunar">The Moon</h2>
+      <div class="cards lunar" id="lunarCards"></div>
+    </section>
+
+    <section aria-labelledby="hExact">
+      <div class="bar"><h2 id="hExact">Exact Martian months</h2>
+        <label class="inline"><span class="lbl">Mars Year</span><input type="number" id="exactMY" class="mono" style="width:6.5em"></label></div>
+      <p class="note">The calendar rounds months to whole sols. Here each month starts at the exact moment Ls crosses its 30° mark (Allison and McEwen 2000 orbit model).</p>
+      <div class="tablewrap"><table class="exact" id="exactTbl"></table></div>
+    </section>
+
+    <section aria-labelledby="hEph">
+      <h2 id="hEph">Transit and eclipse planner</h2>
+      <form class="cfg" id="eph" autocomplete="off">
+        <div class="f"><label class="lbl" for="eName">Target</label><input type="text" id="eName"></div>
+        <div class="f"><label class="lbl" for="eRa">RA (hh:mm:ss or deg)</label><input type="text" id="eRa"></div>
+        <div class="f"><label class="lbl" for="eDec">Dec (±dd:mm:ss or deg)</label><input type="text" id="eDec"></div>
+        <div class="f"><label class="lbl" for="eT0">T0 (BJD<sub>TDB</sub>)</label><input type="text" id="eT0" inputmode="decimal"></div>
+        <div class="f"><label class="lbl" for="ePer">Period (days)</label><input type="text" id="ePer" inputmode="decimal"></div>
+        <div class="f"><label class="lbl" for="eDur">Duration (hours)</label><input type="text" id="eDur" inputmode="decimal"></div>
+        <label class="chk"><input type="checkbox" id="eSec"> Secondary (phase 0.5)</label>
+        <label class="chk"><input type="checkbox" id="eCal"> Show on calendar</label>
+        <p class="note" id="ephNote">Sample values shown. BJD uses TT = UTC + 69.184 s and a low-precision Earth barycentric position, good to about ±2 s. Use astropy for publication-grade timing.</p>
+      </form>
+      <h3>Upcoming</h3>
+      <ul class="evlist" id="upcoming"></ul>
+    </section>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="tab-about" class="tab page prose" aria-label="About" hidden>
+    <h1>Astrochronism</h1>
+    <p class="lede">Astrochronism is the idea of basing time on astronomical things and events instead of arbitrary Earth ones, especially those within our solar system, our stellar neighbourhood, and our galaxy.</p>
+    <p>Most of the calendar we live by is inherited custom. Month lengths come from Roman politics, the year count from a medieval estimate of a birth date, time zones from railway schedules, and leap seconds from committee decisions. None of it is wrong, but very little of it is about the sky.</p>
+    <p>An astrochronist calendar counts from things anyone can measure anywhere: a planet crossing its equinox, the Moon returning to new, the light-travel geometry between the Sun's barycentre and the centre of the Milky Way. Its day numbers mean the same thing to every observer, and they keep working once people live somewhere other than Earth.</p>
+
+    <h2>The systems on this site</h2>
+    <dl class="systems">
+      <dt>Gregorian, local and UTC</dt>
+      <dd>The civil calendar, kept here as the reference point everything converts to and from.</dd>
+      <dt>Martian</dt>
+      <dd>Mars Years numbered from the northern spring equinox of 1955 (MY 1), each split into twelve months of 30° of solar longitude, with sols counted from Airy-0 midnight. Months near aphelion run longer because Mars moves slowest there.</dd>
+      <dt>Lunar Standard Time</dt>
+      <dd>Kenneth L. Lee's 1970 clock for the Moon, which starts at the moment Neil Armstrong stepped onto the surface. A lunar day is one synodic month, divided into 30 cycles; twelve lunar days make a lunar year.</dd>
+      <dt>BJD · Sol–Sgr A*</dt>
+      <dd>Whole days of Barycentric Julian Date measured toward Sagittarius A*, the black hole at the galactic centre. Days are grouped in hectodays (100) and kilodays (1,000).</dd>
+      <dt>BJD · Sol–α Cen</dt>
+      <dd>The same count measured toward Alpha Centauri A, the nearest star system. The two BJD calendars differ by a few minutes at most, depending on where Earth is in its orbit.</dd>
+    </dl>
+
+    <h2>Accuracy</h2>
+    <p>Everything is computed in your browser with compact formulas: the Mars24 / Allison and McEwen (2000) model for Mars, a mean synodic month for the Moon, and a low-precision Earth orbit (plus Jupiter and Saturn's pull on the Sun) for barycentric corrections, good to about two seconds. TT − UTC is held at 69.184 s, so dates before 1972 can be off by up to a minute. For publication-grade timing, use astropy or JPL Horizons.</p>
+
+    <h2>Photos and credits</h2>
+    <p>Backgrounds on the Now tab come from the <a href="https://images.nasa.gov/" target="_blank" rel="noopener">NASA Image and Video Library</a>. NASA imagery is generally not subject to copyright in the United States; see the <a href="https://www.nasa.gov/nasa-brand-center/images-and-media/" target="_blank" rel="noopener">NASA media usage guidelines</a>. Use of NASA imagery does not imply NASA endorsement. Each photo links to its library page.</p>
+    <p>Mars calendar method after Clancy et al. (2000) and Piqueux et al. (2015) for Mars Year numbering; Lunar Standard Time after Kenneth L. Lee (1970).</p>
+    <p class="muted">Made by Ella Agnes Puerto. Source on GitHub.</p>
+  </section>
+</main>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "astrochronist-calendar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Calendars and clocks counted from the sky: Gregorian, Martian, Lunar Standard Time, and barycentric (BJD) days.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/",
+    "serve": "python -m http.server 8090"
+  },
+  "license": "MIT"
+}
