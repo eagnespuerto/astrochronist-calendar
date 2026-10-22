@@ -1,9 +1,10 @@
 // Now-tab backgrounds from the NASA Image and Video Library (images.nasa.gov).
 // Hand-picked IDs per time system; files are resolved through the public API at runtime.
 const SETS = {
-  greg: ["as17-148-22727", "art002e021278", "as08-14-2383"],
+  // Earth must fill the frame here; Earthrise/Earthset shots are mostly Moon, so they live in `lunar`.
+  greg: ["as17-148-22727", "iss045e013851", "iss042e340851"],
   mars: ["PIA24921", "PIA24264", "PIA24765", "PIA24422"],
-  lunar: ["as11-40-5875", "as11-40-5903", "jsc2004e52772", "as08-14-2383"],
+  lunar: ["as11-40-5875", "as11-40-5903", "jsc2004e52772", "as08-14-2383", "art002e021278"],
   "bjd-sgra": ["PIA13932", "PIA17009", "PIA03653", "PIA12348"],
   "bjd-acen": ["GSFC_20171208_Archive_e000214", "sts075-351-022"],
 };
