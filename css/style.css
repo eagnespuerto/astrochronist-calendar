@@ -59,19 +59,17 @@ button:disabled { opacity: .4; cursor: default; }
 .site {
   position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 10px max(16px, env(safe-area-inset-left)) 10px max(16px, env(safe-area-inset-right));
-  background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
+  /* Always cream, in light and dark mode: the logo's clock ticks are black and need a light ground. */
+  background: rgba(247, 241, 227, .94); backdrop-filter: blur(10px);
+  border-bottom: 1px solid #E2D4AE; color-scheme: light;
 }
-.brand { display: flex; align-items: center; gap: 9px; font-family: var(--f-display); font-weight: 700; font-size: 1.15rem; color: var(--fg); text-decoration: none; }
-.orb { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFD27A, #E8A33D 55%, #B4472A); box-shadow: 0 0 0 3px var(--soft); }
+.brand { display: flex; align-items: center; gap: 8px; font-family: var(--f-display); font-weight: 700; font-size: 1.15rem; color: #241D10; text-decoration: none; }
+.logo { display: block; width: 38px; height: 38px; margin: -4px 0; }
 nav { display: flex; gap: 2px; overflow-x: auto; }
-nav a { color: var(--muted); text-decoration: none; padding: 7px 11px; border-radius: 8px; font-weight: 700; font-size: .92rem; white-space: nowrap; }
-nav a:hover { color: var(--fg); }
-nav a[aria-current="page"] { color: var(--fg); background: var(--soft); }
-body.on-now .site { background: rgba(8, 12, 18, .55); border-color: rgba(255, 255, 255, .12); }
-body.on-now .site .brand, body.on-now nav a[aria-current="page"] { color: #fff; }
-body.on-now nav a { color: rgba(255, 255, 255, .72); }
-body.on-now nav a[aria-current="page"] { background: rgba(255, 255, 255, .14); }
+nav a { color: #6E6248; text-decoration: none; padding: 7px 11px; border-radius: 8px; font-weight: 700; font-size: .92rem; white-space: nowrap; }
+nav a:hover { color: #241D10; }
+nav a[aria-current="page"] { color: #241D10; background: #EBDDB4; }
+.site :focus-visible { outline-color: #9A6A00; }
 
 .page { max-width: 1400px; margin: 0 auto; padding: 22px max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); }
 
