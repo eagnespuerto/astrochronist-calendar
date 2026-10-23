@@ -94,6 +94,7 @@ body.on-now nav a[aria-current="page"] { background: rgba(255, 255, 255, .14); }
 .clock { font-size: clamp(3.2rem, 14vw, 8.5rem); font-weight: 600; letter-spacing: -.03em; line-height: 1; margin-top: 18px; text-shadow: 0 2px 30px rgba(0, 0, 0, .5); }
 .clock-note { color: rgba(244, 246, 250, .78); font-size: .95rem; }
 .dmy { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: min(720px, 100%); margin-top: 10px; }
+.dmy.four { grid-template-columns: repeat(4, minmax(0, 1fr)); width: min(880px, 100%); }
 .dmy > div { background: rgba(10, 14, 22, .45); border: 1px solid rgba(255, 255, 255, .16); border-radius: 14px; padding: 12px 10px; display: grid; gap: 3px; backdrop-filter: blur(8px); min-width: 0; }
 .dmy .lbl { color: rgba(244, 246, 250, .7); }
 .dmy .v { font-family: var(--f-display); font-weight: 700; font-size: clamp(1.4rem, 5vw, 2.4rem); line-height: 1.1; overflow-wrap: anywhere; }
@@ -108,7 +109,7 @@ body.on-now nav a[aria-current="page"] { background: rgba(255, 255, 255, .14); }
 .credit a { color: rgba(244, 246, 250, .75); text-decoration: none; text-align: right; }
 .credit a:hover { color: #fff; text-decoration: underline; }
 .credit button { min-height: 28px; padding: 2px 9px; background: rgba(255, 255, 255, .08); color: #F4F6FA; border-color: rgba(255, 255, 255, .25); border-radius: 999px; }
-@media (max-width: 560px) { .dmy { gap: 6px; } .dmy > div { padding: 9px 6px; } .extras { flex-direction: column; gap: 3px; } }
+@media (max-width: 560px) { .dmy { gap: 6px; } .dmy.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dmy > div { padding: 9px 6px; } .extras { flex-direction: column; gap: 3px; } }
 
 /* ---------- CALENDAR (Mars-calendar format) ---------- */
 .cal-top { display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; align-items: flex-end; }

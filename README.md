@@ -18,8 +18,10 @@ Calendars and clocks counted from the sky instead of from Earth custom. A static
 | Gregorian | civil day (local) | month | year | — |
 | Martian | sol (Airy-0 midnight) | M1–M12, 30° of Ls each | Mars Year | MY 1 = 1955 northern spring equinox |
 | Lunar Standard Time | cycle (24 lunar hours) | lunar day = 1 synodic month | 12 lunar days | 1969-07-21 02:56:15 UTC (Apollo 11 first step) |
-| BJD · Sol–Sgr A\* | BJD_TDB day | hectoday (100 days) | kiloday (1,000 days) | JD 0 |
-| BJD · Sol–α Cen | BJD_TDB day | hectoday | kiloday | JD 0 |
+| BJD · Sol–Sgr A\* | BJD_TDB day | hectoday (100 days), kiloday (1,000 days) | 365.25-day year; Year 1 starts at BJD 0.0 | BJD 0 |
+| BJD · Sol–α Cen | BJD_TDB day | hectoday, kiloday | 365.25-day year | BJD 0 |
+
+A BJD day belongs to the year it starts in, so years run 366, 365, 365, 365 days. The year number matches the Julian Period year (AD 2026 ≈ Year 6739).
 
 ## Run locally
 

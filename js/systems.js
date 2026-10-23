@@ -6,7 +6,7 @@ import {
   fmtUTCDate, fmtUTCShort, fmtUTCFull, isoUTC,
 } from "./time/core.js";
 import * as Mars from "./time/mars.js";
-import { BASES, bjdFromMs, msFromBjd, corrSec } from "./time/bary.js";
+import { BASES, bjdFromMs, msFromBjd, corrSec, bjdYear, bjdYearStart, dayFromBjdYear } from "./time/bary.js";
 import { lst, msFromLst, lstString, clock, moonPhase, meanPhaseMs, SYNODIC } from "./time/lunar.js";
 
 const tz = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "local time";
@@ -216,7 +216,7 @@ export const lunar = {
 function bjdSystem(base) {
   return {
     id: "bjd-" + base.id, base, name: `BJD · Sol–${base.name}`, menu: `BJD · Sol–${base.name}`,
-    unit: { day: "Day", month: "Hectoday", year: "Kiloday" },
+    unit: { day: "Day", month: "Hectoday", kilo: "Kiloday", year: "Year" },
     yearOf: ms => Math.floor(Math.floor(bjdFromMs(ms, base)) / 1000),
     clampYear: y => y,
     yearTitle: k => `Kiloday ${fmt(k)}`,
@@ -227,7 +227,14 @@ function bjdSystem(base) {
         const cells = [];
         for (let i = 0; i < 100; i++) {
           const N = K * 1000 + h * 100 + i, start = msFromBjd(N, base), end = msFromBjd(N + 1, base);
-          cells.push({ label: pad(N % 1000, 3), sub: fmtUTCShort.format(start), start, end, aria: `Day ${fmt(N)}` });
+          const Y = bjdYear(N);
+          const cell = { label: pad(N % 1000, 3), sub: fmtUTCShort.format(start), start, end, aria: `Day ${fmt(N)}, Year ${fmt(Y.year)} day ${Y.doy}` };
+          if (Y.doy === 1) {
+            const y0 = bjdYearStart(Y.year);
+            cell.cls = "ev";
+            cell.note = `Year ${fmt(Y.year)} begins` + (y0 === N ? "" : ` (the year itself starts at BJD ${fmt(Math.floor(y0))}${(y0 % 1).toFixed(2).slice(1)}, during the day before)`);
+          }
+          cells.push(cell);
         }
         months.push({
           title: `Hectoday ${h}`, sub: `days ${h}00–${h}99`, right: "100 days",
@@ -236,30 +243,45 @@ function bjdSystem(base) {
           accent: nowN >= K * 1000 + h * 100 && nowN < K * 1000 + h * 100 + 100,
         });
       }
+      const ya = bjdYear(K * 1000), yb = bjdYear(K * 1000 + 999);
       return {
-        subtitle: `Days ${fmt(K * 1000)} to ${fmt(K * 1000 + 999)}: ${fmtUTCDate.format(months[0].cells[0].start)} to ${fmtUTCDate.format(months[9].cells[99].start)}. Day numbers are BJD_TDB toward ${base.long}.`,
+        subtitle: `Days ${fmt(K * 1000)} to ${fmt(K * 1000 + 999)}, from Year ${fmt(ya.year)} day ${ya.doy} to Year ${fmt(yb.year)} day ${yb.doy}: ${fmtUTCDate.format(months[0].cells[0].start)} to ${fmtUTCDate.format(months[9].cells[99].start)}. Day numbers are BJD_TDB toward ${base.long}.`,
         band: months.map((m, i) => ({ label: `H${i}`, value: "", weight: 1, accent: m.accent })),
         bandNote: "Ten hectodays of 100 days make a kiloday. The highlighted hectoday holds today.",
         months,
-        foot: `Each day starts when the barycentric Julian Date toward ${base.name} (${base.coords}) passes a whole number, near noon UTC. That moment shifts by a few minutes over the year as Earth swings around the Sun's barycentre, but everyone on Earth shares the same day number at once. Small dates under each day are the UTC date it starts on.`,
+        foot: `Each day starts when the barycentric Julian Date toward ${base.name} (${base.coords}) passes a whole number, near noon UTC. That moment shifts by a few minutes over the year as Earth swings around the Sun's barycentre, but everyone on Earth shares the same day number at once. Years are 365.25 days counted from BJD 0, so Year 1 starts at second 0; a day belongs to the year it starts in, which gives 366, 365, 365 and 365 days in each four-year cycle. Highlighted days begin a new year. Small dates under each day are the UTC date it starts on.`,
       };
     },
-    label: ms => `BJD ${bjdFromMs(ms, base).toFixed(5)}`,
-    dayLabel: ms => `Day ${fmt(Math.floor(bjdFromMs(ms, base)))}`,
+    label(ms) {
+      const b = bjdFromMs(ms, base), Y = bjdYear(Math.floor(b));
+      // Truncate (not round) so a day's last instant never reads as the next whole day
+      return `BJD ${(Math.floor(b * 1e5) / 1e5).toFixed(5)} · Year ${fmt(Y.year)} day ${Y.doy}`;
+    },
+    dayLabel(ms) {
+      const N = Math.floor(bjdFromMs(ms, base)), Y = bjdYear(N);
+      return `Day ${fmt(N)} · Year ${fmt(Y.year)}, day ${Y.doy}`;
+    },
     now(ms) {
-      const b = bjdFromMs(ms, base), N = Math.floor(b), j = jdFromMs(ms);
+      const b = bjdFromMs(ms, base), N = Math.floor(b), j = jdFromMs(ms), Y = bjdYear(N);
       const start = msFromBjd(N, base);
       const wk = WEEKDAYS[mod(N + 1, 7)];
       return {
         time: hms((ms - start) / 864e5), timeNote: `into BJD day · fraction ${(b - N).toFixed(5)}`,
         day: { v: pad(N % 1000, 3), sub: `${wk} · day ${fmt(N)}` },
         month: { v: `H${Math.floor((N % 1000) / 100)}`, sub: "hectoday of 10" },
-        year: { v: fmt(Math.floor(N / 1000)), sub: "kiloday" },
+        kilo: { v: fmt(Math.floor(N / 1000)), sub: "kiloday" },
+        year: { v: fmt(Y.year), sub: `day ${Y.doy} of ${Y.len}` },
         extras: [["BJD_TDB", b.toFixed(6)], ["Barycentric shift", `${(corrSec(j, base.ra, base.dec) / 60).toFixed(2)} min`], ["Toward", base.long]],
       };
     },
-    placeholder: "2461340.5 (BJD) or 61340 (MJD-style)",
+    placeholder: "2461340.5 (BJD), 61340 (MJD), or Year 6739 day 281",
     parse(s) {
+      const ym = s.trim().match(/^(?:year|y)\s*(-?[\d,]+)\s*[, ]\s*(?:day|d)\s*(\d{1,3})$/i);
+      if (ym) {
+        const y = +ym[1].replace(/,/g, ""), d = +ym[2];
+        if (!(d >= 1 && d <= bjdYear(dayFromBjdYear(y, 1)).len)) return null;
+        return msFromBjd(dayFromBjdYear(y, d), base);
+      }
       const v = parseFloat(s.replace(/,/g, ""));
       if (!isFinite(v)) return null;
       return msFromBjd(v < 100000 ? v + 2400000.5 : v, base);

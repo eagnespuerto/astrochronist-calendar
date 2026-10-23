@@ -62,6 +62,16 @@ export function utcFromBjd(b, t) {
   return jd;
 }
 
+// BJD years: 365.25-day Julian years counted from BJD 0.0, so Year 1 starts at second 0.
+// A BJD day belongs to the year it starts in, giving 366, 365, 365, 365 days in a 4-year cycle.
+export const BJD_YEAR = 365.25;
+export const bjdYearStart = y => (y - 1) * BJD_YEAR;
+export function bjdYear(N) {
+  const year = Math.floor(N / BJD_YEAR) + 1, first = Math.ceil(bjdYearStart(year));
+  return { year, doy: N - first + 1, len: Math.ceil(bjdYearStart(year + 1)) - first, first };
+}
+export const dayFromBjdYear = (year, doy) => Math.ceil(bjdYearStart(year)) + doy - 1;
+
 export const bjdFromMs = (ms, t) => bjd(jdFromMs(ms), t);
 export const msFromBjd = (b, t) => msFromJd(utcFromBjd(b, t));
 
