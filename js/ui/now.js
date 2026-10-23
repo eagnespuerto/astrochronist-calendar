@@ -16,7 +16,10 @@ function tick() {
   const now = Date.now(), p = sys.now(now, geo);
   $("nowTime").textContent = p.time;
   $("nowNote").textContent = p.timeNote;
-  for (const k of ["day", "month", "year"]) {
+  $("kiloChip").hidden = !p.kilo;
+  $("kiloChip").parentElement.classList.toggle("four", !!p.kilo);
+  for (const k of ["day", "month", "kilo", "year"]) {
+    if (!p[k]) continue;
     const K = k[0].toUpperCase() + k.slice(1);
     $("u" + K).textContent = sys.unit[k];
     $("n" + K).textContent = p[k].v;

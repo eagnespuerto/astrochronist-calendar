@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import * as Mars from "../js/time/mars.js";
-import { BASES, bjd, utcFromBjd, corrSec } from "../js/time/bary.js";
+import { BASES, bjd, utcFromBjd, corrSec, bjdYear, dayFromBjdYear } from "../js/time/bary.js";
 import { lst, msFromLst, LST_EPOCH, moonPhase } from "../js/time/lunar.js";
 import { sunTimes } from "../js/time/solar.js";
 import { jdFromMs } from "../js/time/core.js";
@@ -41,6 +41,19 @@ test("BJD round-trips and the correction stays under one light-AU", () => {
     const B = bjd(jd, b);
     near(utcFromBjd(B, b), jd, 1e-8, "round trip");
     assert.ok(Math.abs(corrSec(jd, b.ra, b.dec)) < 505);
+  }
+});
+
+test("BJD years start at BJD 0 and run 366/365/365/365 days", () => {
+  assert.deepEqual(bjdYear(0), { year: 1, doy: 1, len: 366, first: 0 });
+  assert.equal(bjdYear(365).doy, 366);
+  assert.deepEqual([bjdYear(366).year, bjdYear(366).doy], [2, 1]);
+  assert.deepEqual([2, 3, 4, 5].map(y => bjdYear(dayFromBjdYear(y, 1)).len), [365, 365, 365, 366]);
+  // Year number matches the Julian Period year (AD 2026 = JP 6739)
+  assert.equal(bjdYear(2461336).year, 6739);
+  for (const N of [0, 1000, 2461336, 2461700]) {
+    const y = bjdYear(N);
+    assert.equal(dayFromBjdYear(y.year, y.doy), N);
   }
 });
 
