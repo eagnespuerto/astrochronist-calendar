@@ -1,5 +1,11 @@
 # Astrochronist Calendar
 
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![made with](https://img.shields.io/badge/made%20with-JavaScript-F7DF1E?logo=javascript&logoColor=white)](https://github.com/eagnespuerto/astrochronist-calendar)
+[![website](https://img.shields.io/badge/website-live-brightgreen)](https://eagnespuerto.github.io/astrochronist-calendar/)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support%20me-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/eagnespuerto)
+[![Linktree](https://img.shields.io/badge/Linktree-soitsagnes-43E55E?logo=linktree&logoColor=white)](https://linktr.ee/soitsagnes)
+
 Calendars and clocks counted from the sky instead of from Earth custom. A static site with no build step.
 
 **Astrochronism** is the idea of basing time on astronomical things and events, especially those within our solar system, stellar neighbourhood, and galaxy, instead of arbitrary Earth events.
